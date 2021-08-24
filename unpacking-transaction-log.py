@@ -49,10 +49,10 @@
 import os, shutil
 
 # Configurations necessary for running of Databricks Community Edition
-spark.sql("set spark.sql.shuffle.partitions = 1")
-spark.sql("set spark.databricks.delta.snapshotPartitions = 1")
+# spark.sql("set spark.sql.shuffle.partitions = 1")
+# spark.sql("set spark.databricks.delta.snapshotPartitions = 1")
 
-demo_path = "/sais_eu_19_demo/"
+demo_path = "/Users/ivan.tang@databricks.com/unpacking-transaction-log"
 
 if os.path.exists("/dbfs" + demo_path):
   print("Deleting path " + demo_path)
@@ -69,7 +69,7 @@ import os
 import shutil
 from pyspark.sql.functions import * 
 
-parquet_path = "/sais_eu_19_demo/loans_parquet"
+parquet_path = demo_path + "/loans_parquet"
 
 # Delete a new parquet table with the parquet file
 if os.path.exists("/dbfs" + parquet_path):
