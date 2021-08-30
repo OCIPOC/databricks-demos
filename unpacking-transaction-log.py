@@ -228,8 +228,8 @@ stop_all_streams()
 delta_path = "/sais_eu_19_demo/loans_delta"
 
 # Configurations necessary for running of Databricks Community Edition
-spark.sql("set spark.sql.shuffle.partitions = 1")
-spark.sql("set spark.databricks.delta.snapshotPartitions = 1")
+# spark.sql("set spark.sql.shuffle.partitions = 1")
+# spark.sql("set spark.databricks.delta.snapshotPartitions = 1")
 
 # Remove folder if it exists
 print("Deleting directory " + delta_path)
@@ -350,6 +350,11 @@ stop_all_streams()
 
 # MAGIC %sh 
 # MAGIC ls -lt /dbfs/sais_eu_19_demo/loans_delta/_delta_log/
+
+# COMMAND ----------
+
+# MAGIC %sh 
+# MAGIC cat /dbfs/sais_eu_19_demo/loans_delta/_delta_log/00000000000000000001.json 
 
 # COMMAND ----------
 
