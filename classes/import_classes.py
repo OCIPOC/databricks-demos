@@ -41,7 +41,7 @@ def clear_working_dirs():
     shutil.rmtree("/dbfs" + download_path)
 
 def random_checkpoint_dir(): 
-  return "/sais_eu_19_demo/chkpt/%s" % str(random.randint(0, 10000))
+  return "/Users/ivan.tang@databricks.com/chkpt/%s" % str(random.randint(0, 10000))
 
 # User-defined function to generate random state
 
@@ -76,7 +76,7 @@ def stop_all_streams():
     s.stop()
   print("Stopped all streams")
   print("Deleting checkpoints")  
-  dbutils.fs.rm("/sais_eu_19_demo/chkpt/", True)
+  dbutils.fs.rm("/Users/ivan.tang@databricks.com/chkpt/", True)
   print("Deleted checkpoints")
 
 # COMMAND ----------

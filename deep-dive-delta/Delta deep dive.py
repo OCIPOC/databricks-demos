@@ -52,11 +52,7 @@ spark.read.format("parquet") \
 
 # COMMAND ----------
 
-parquet_path
-
-# COMMAND ----------
-
-spark.sql("select count(*) from loans_parquet").show()
+display(dbutils.fs.ls(parquet_path))
 
 # COMMAND ----------
 
@@ -67,62 +63,54 @@ spark.sql("select count(*) from loans_parquet").show()
 # COMMAND ----------
 
 # MAGIC %md 
-# MAGIC # Parquet ➡️ Delta
+# MAGIC ## Parquet ➡️ Delta
 
 # COMMAND ----------
 
-delta_path = "/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet"
+delta_path = parquet_path
 
 spark.sql("CONVERT TO DELTA parquet.`%s`" %delta_path)
 
-spark.read.format("delta").load(delta_path).createOrReplaceTempView("loans_delta")
+df_loans = spark.read.format("delta").load(delta_path)
+df_loans.createOrReplaceTempView("loans_delta")
 
 # COMMAND ----------
 
-# MAGIC  %sh
-# MAGIC  
-# MAGIC  ls /dbfs/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet/_delta_log
+display(dbutils.fs.ls(parquet_path))
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC 
+# MAGIC SELECT * FROM loans_delta
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC 
-# MAGIC <br><br><br><br><br>
+# MAGIC ## Replace State Abbreviations 
+
+# COMMAND ----------
+
+import pandas as pd
+df_states = pd.read_csv('https://raw.githubusercontent.com/jasonong/List-of-US-States/master/states.csv')
+mapping = dict([(t[1], t[0]) for t in df_states.values.tolist()])
+
+df_loans = df_loans.withColumn("addr_state", df_loans["addr_state"])\
+    .replace(to_replace=list(mapping.keys()), value=list(mapping.values()), subset="addr_state")
+
+df_loans.write.format("delta").mode('overwrite').save(delta_path)
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC 
+# MAGIC Select * from loans_delta
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC 
-# MAGIC #🤓 DML queries!
-
-# COMMAND ----------
-
-spark.sql("UPDATE loans_delta SET addr_state='TEXAS' WHERE addr_state = 'TX'").show()
-
-# COMMAND ----------
-
-spark.sql("DELETE FROM loans_delta WHERE funded_amnt<40000").show()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC 
-# MAGIC <br><br><br><br><br>
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC 
-# MAGIC # 📃 Table versioning
-
-# COMMAND ----------
-
-deltaTable = DeltaTable.forPath(spark, delta_path)
-display(deltaTable.history())
-
-# COMMAND ----------
-
-# MAGIC %md
 # MAGIC <br><br><br><br><br>
 
 # COMMAND ----------
@@ -132,11 +120,38 @@ display(deltaTable.history())
 
 # COMMAND ----------
 
-spark.sql("SELECT * FROM delta.`%s` VERSION AS OF 3" %(delta_path)).show()
+# MAGIC %md 
+# MAGIC 
+# MAGIC ## Table versioning
 
 # COMMAND ----------
 
-spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 150" %(delta_path)).show()
+deltaTable = DeltaTable.forPath(spark, delta_path)
+display(deltaTable.history())
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ## Querying earlier versions
+
+# COMMAND ----------
+
+spark.sql("SELECT * FROM delta.`%s` VERSION AS OF 0" %(delta_path)).show()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## Restoring
+
+# COMMAND ----------
+
+spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 0" %(delta_path)).show()
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC 
+# MAGIC select * from loans_delta
 
 # COMMAND ----------
 
@@ -150,28 +165,55 @@ spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 150" %(delta_path)).show()
 
 # COMMAND ----------
 
-# DBTITLE 1,Read Stream
+# MAGIC %md 
+# MAGIC 
+# MAGIC ## Read stream
+
+# COMMAND ----------
+
 spark.readStream.format("delta").load(delta_path).createOrReplaceTempView("loans_delta_stream")
 
 display(spark.sql("select count(*) from loans_delta_stream"))
 
 # COMMAND ----------
 
-df = spark.readStream.format("delta").load(delta_path)
+# MAGIC %md
+# MAGIC 
+# MAGIC ## Batch read
 
 # COMMAND ----------
 
 # DBTITLE 1,Batch read
-spark.sql("SELECT count(*) FROM loans_delta").show()
+# MAGIC %sql
+# MAGIC SELECT count(*) FROM loans_delta
 
 # COMMAND ----------
 
-# DBTITLE 1,Batch update
-spark.sql("UPDATE loans_delta SET addr_state='CALIFORNIA' WHERE addr_state = 'CA'").show()
+# MAGIC %md
+# MAGIC ## Batch update
 
 # COMMAND ----------
 
-# DBTITLE 1,Write Stream
+spark.sql("UPDATE loans_delta SET addr_state='TEXAS' WHERE addr_state = 'Texas'").show()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC #🌱 Schema Evolution
+# MAGIC 
+# MAGIC Each output row from `Rate source` contains `timestamp` and `value`.
+# MAGIC 
+# MAGIC See [Input Sources](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#input-sources) for other built-in sources with details.
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC 
+# MAGIC ## Enforcement of schema
+
+# COMMAND ----------
+
 stream_query_2 = generate_and_append_data_stream(table_format = "delta", table_path = delta_path)
 
 # COMMAND ----------
@@ -180,21 +222,13 @@ spark.sql("DESCRIBE loans_delta_stream").show()
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC 
-# MAGIC ## Schema evolution
-# MAGIC 
-# MAGIC Each output row from `Rate source` contains `timestamp` and `value`.
-# MAGIC 
-# MAGIC See [Input Sources](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#input-sources) for other built-in sources with details.
-
-# COMMAND ----------
-
 spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled = true")
 
 # COMMAND ----------
 
-delta_path
+# MAGIC %md
+# MAGIC 
+# MAGIC # 🚅 Optimization
 
 # COMMAND ----------
 
@@ -203,9 +237,9 @@ delta_path
 
 # COMMAND ----------
 
-# MAGIC %md
+# MAGIC %md 
 # MAGIC 
-# MAGIC # 🚅 Optimization
+# MAGIC ## Bin-packing
 
 # COMMAND ----------
 
@@ -234,12 +268,17 @@ spark.sql("set spark.databricks.delta.retentionDurationCheck.enabled = false").s
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC ALTER TABLE delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet` SET TBLPROPERTIES (delta.autoOptimize.optimizeWrite = true, delta.autoOptimize.autoCompact = true)
+# MAGIC ALTER TABLE
+# MAGIC   delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet`
+# MAGIC SET
+# MAGIC   TBLPROPERTIES (
+# MAGIC     delta.autoOptimize.optimizeWrite = true,
+# MAGIC     delta.autoOptimize.autoCompact = true
+# MAGIC   )
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC show tblproperties delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet`
+# MAGIC %sql show tblproperties delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet`
 
 # COMMAND ----------
 
