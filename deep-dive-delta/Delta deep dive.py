@@ -164,6 +164,10 @@ spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 0" %(delta_path)).show()
 
 # COMMAND ----------
 
+spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 1" %(delta_path)).show()
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC 
 # MAGIC select * from loans_delta
@@ -246,7 +250,7 @@ stream_query_2 = generate_and_append_data_stream(table_format = "delta", table_p
 
 # COMMAND ----------
 
-spark.sql("DESCRIBE loans_delta").show()
+spark.sql("DESCRIBE loans_delta_stream").show()
 
 # COMMAND ----------
 
