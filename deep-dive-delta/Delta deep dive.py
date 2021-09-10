@@ -162,7 +162,7 @@ df = spark.readStream.format("delta").load(delta_path)
 # COMMAND ----------
 
 # DBTITLE 1,Batch read
-spark.sql("SELECT count(*) FROM loans_delta").show()
+spark.sql("SELECT count(*) FROM delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet`").show()
 
 # COMMAND ----------
 
@@ -209,11 +209,15 @@ delta_path
 
 # COMMAND ----------
 
-spark.sql("OPTIMIZE delta.`%s`" %(delta_path)).show()
+# MAGIC %sql
+# MAGIC 
+# MAGIC OPTIMIZE delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet`
 
 # COMMAND ----------
 
-spark.sql("VACUUM delta.`%s` RETAIN 0 HOURS" %(delta_path)).show()
+# MAGIC %sql 
+# MAGIC 
+# MAGIC VACUUM delta.`/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet` RETAIN 0 HOURS
 
 # COMMAND ----------
 
