@@ -83,13 +83,7 @@ df_loans.createOrReplaceTempView("loans_delta")
 
 # COMMAND ----------
 
-display(dbutils.fs.ls(parquet_path))
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC 
-# MAGIC SELECT * FROM loans_delta
+display(dbutils.fs.ls(parquet_path + '/_delta_log'))
 
 # COMMAND ----------
 
@@ -157,6 +151,8 @@ spark.sql("SELECT * FROM delta.`%s` VERSION AS OF 0" %(delta_path)).show()
 # MAGIC ## Rollback
 # MAGIC 
 # MAGIC Ability to rollback your Delta table to a point in time, providing reproducibility!
+# MAGIC 
+# MAGIC TODO: how this can be difficult with parquet table
 
 # COMMAND ----------
 
@@ -194,9 +190,13 @@ spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 1" %(delta_path)).show()
 
 # COMMAND ----------
 
-spark.readStream.format("delta").load(delta_path).createOrReplaceTempView("loans_delta_stream")
+delta_path
 
-display(spark.sql("select count(*) from loans_delta_stream"))
+# COMMAND ----------
+
+spark.readStream.format("delta").option("ignoreDeletes", "true").load(delta_path).createOrReplaceTempView("loans_delta_stream")
+
+display(spark.sql("select count(1) from loans_delta_stream"))
 
 # COMMAND ----------
 
@@ -217,7 +217,7 @@ display(spark.sql("select count(*) from loans_delta_stream"))
 
 # COMMAND ----------
 
-spark.sql("UPDATE loans_delta SET addr_state='TEXAS' WHERE addr_state = 'Texas'").show()
+spark.sql("UPDATE loans_delta SET addr_state='CALIFORNIA' WHERE addr_state = 'California'").show()
 
 # COMMAND ----------
 
@@ -240,6 +240,8 @@ spark.sql("UPDATE loans_delta SET addr_state='TEXAS' WHERE addr_state = 'Texas'"
 # MAGIC %md 
 # MAGIC 
 # MAGIC ## Enforcement of schema
+# MAGIC 
+# MAGIC Delta helps ensure data integrity for ingested data by providing schema enforcement
 
 # COMMAND ----------
 
@@ -250,7 +252,7 @@ stream_query_2 = generate_and_append_data_stream(table_format = "delta", table_p
 
 # COMMAND ----------
 
-spark.sql("DESCRIBE loans_delta_stream").show()
+spark.sql("DESCRIBE loans_delta").show()
 
 # COMMAND ----------
 
@@ -275,6 +277,7 @@ spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled = true")
 
 # COMMAND ----------
 
+delta_path = parquet_path
 spark.sql("OPTIMIZE delta.`%s`" %(delta_path)).show()
 
 # COMMAND ----------
