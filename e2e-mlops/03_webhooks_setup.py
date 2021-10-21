@@ -1,27 +1,4 @@
 # Databricks notebook source
-# MAGIC %md ---
-# MAGIC title: End-to-End MLOps demo with MLFlow, Feature Store and Auto ML, part 3 - MLflow registry webhooks
-# MAGIC authors:
-# MAGIC - Rafi Kurlansik
-# MAGIC tags:
-# MAGIC - python
-# MAGIC - mlflow
-# MAGIC - mlflow-registry
-# MAGIC - webhooks
-# MAGIC - slack
-# MAGIC created_at: 2021-05-01
-# MAGIC updated_at: 2021-05-01
-# MAGIC tldr: End-to-end demo of Databricks for MLOps, including MLflow, the registry, webhooks, scoring, feature store and auto ML. Part 3 - setup MLflow registry webhooks for Slack notifications or testing jobs
-# MAGIC ---
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC # Notebook Links
-# MAGIC - AWS demo.cloud: [https://demo.cloud.databricks.com/#notebook/10166890](https://demo.cloud.databricks.com/#notebook/10166890)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Model Registry Webhooks
 # MAGIC 
@@ -58,6 +35,11 @@
 import mlflow
 from mlflow.utils.rest_utils import http_request
 import json
+import urllib 
+
+dbutils.widgets.text('model_name','e2e-mlops-demo-model')
+dbutils.widgets.text('job_id', '208', label='Job to be triggered')
+
 
 def client():
   return mlflow.tracking.client.MlflowClient()
@@ -91,6 +73,7 @@ def mlflow_call_endpoint(endpoint, method, body='{}'):
 
 # Which model in the registry will we create a webhook for?
 model_name = dbutils.widgets.get("model_name")
+job_id = dbutils.widgets.get("job_id")
 
 trigger_job = json.dumps({
   "model_name": model_name,
@@ -98,7 +81,7 @@ trigger_job = json.dumps({
   "description": "Trigger the ops_validation job when a model is moved to staging.",
   "status": "ACTIVE",
   "job_spec": {
-    "job_id": "11507",    # This is our 05_ops_validation notebook
+    "job_id": job_id,    # This is our 05_ops_validation notebook
     "workspace_url": host,
     "access_token": token
   }
@@ -157,7 +140,7 @@ trigger_job = json.dumps({
   "events": ["MODEL_VERSION_TRANSITIONED_STAGE"],
   "description": "Trigger the ops_validation job when a model is moved to staging.",
   "job_spec": {
-    "job_id": "11507",
+    "job_id": job_id,
     "workspace_url": host,
     "access_token": token
   }
@@ -198,7 +181,7 @@ mlflow_call_endpoint("registry-webhooks/create", method = "POST", body = trigger
 
 # COMMAND ----------
 
-list_model_webhooks = json.dumps({"model_name": model_name})
+list_model_webhooks = json.dumps({"model_name": dbutils.widgets.get('model_name')})
 
 mlflow_call_endpoint("registry-webhooks/list", method = "GET", body = list_model_webhooks)
 
@@ -209,10 +192,19 @@ mlflow_call_endpoint("registry-webhooks/list", method = "GET", body = list_model
 
 # COMMAND ----------
 
-# Remove a webhook
-mlflow_call_endpoint("registry-webhooks/delete",
-                     method="DELETE",
-                     body = json.dumps({'id': 'c19ce9793122482d972862e4934ca416'}))
+# list_model_webhooks = json.dumps({"model_name": dbutils.widgets.get("model_name")})
+# webhooks = mlflow_call_endpoint("registry-webhooks/list", method = "GET", body = list_model_webhooks)
+# for i in webhooks['webhooks']:
+#   mlflow_call_endpoint("registry-webhooks/delete",
+#                      method="DELETE",
+#                      body = json.dumps({'id': i['id']}))
+
+# COMMAND ----------
+
+# # Remove a webhook
+# mlflow_call_endpoint("registry-webhooks/delete",
+#                      method="DELETE",
+#                      body = json.dumps({'id': 'c19ce9793122482d972862e4934ca416'}))
 
 # COMMAND ----------
 
@@ -229,3 +221,13 @@ mlflow_call_endpoint("registry-webhooks/delete",
 # MAGIC Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href="http://www.apache.org/">Apache Software Foundation</a>.<br/>
 # MAGIC <br/>
 # MAGIC <a href="https://databricks.com/privacy-policy">Privacy Policy</a> | <a href="https://databricks.com/terms-of-use">Terms of Use</a> | <a href="http://help.databricks.com/">Support</a>
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC Go to [04_from_exp_to_registry](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2057356028947982/command/2057356028948046) notebook
+
+# COMMAND ----------
+
+

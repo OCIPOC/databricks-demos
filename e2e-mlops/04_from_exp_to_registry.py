@@ -1,27 +1,4 @@
 # Databricks notebook source
-# MAGIC %md ---
-# MAGIC title: End-to-End MLOps demo with MLFlow, Feature Store and Auto ML, part 4 - registering a model for testing
-# MAGIC authors:
-# MAGIC - Rafi Kurlansik
-# MAGIC tags:
-# MAGIC - python
-# MAGIC - mlflow
-# MAGIC - mlflow-registry
-# MAGIC - lifecycle-management
-# MAGIC - staging
-# MAGIC created_at: 2021-05-01
-# MAGIC updated_at: 2021-05-01
-# MAGIC tldr: End-to-end demo of Databricks for MLOps, including MLflow, the registry, webhooks, scoring, feature store and auto ML. Part 4 - promote model to staging with MLflow registry, to trigger testing
-# MAGIC ---
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC # Notebook Links
-# MAGIC - AWS demo.cloud: [https://demo.cloud.databricks.com/#notebook/10166911](https://demo.cloud.databricks.com/#notebook/10166911)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ### Managing the model lifecycle with Model Registry
 # MAGIC 
@@ -63,14 +40,20 @@
 
 # COMMAND ----------
 
+dbutils.widgets.text('run_id','a4c408651502439b90e0b43b042d6938')
+dbutils.widgets.text('model_name', 'e2e-mlops-demo-model')
+
+run_id = dbutils.widgets.get('run_id') 
+model_name = dbutils.widgets.get('model_name')
+model_uri = f"runs:/{run_id}/model"
+
+# COMMAND ----------
+
 import mlflow
 from mlflow.tracking import MlflowClient
 
-client = MlflowClient()
 
-run_id = '0e6044845e604fb5b638d78005aa1bb0' # replace with your own run ID, etc
-model_name = "hhar_churn"
-model_uri = f"runs:/{run_id}/model"
+client = MlflowClient()
 
 client.set_tag(run_id, key='db_table', value='ibm_telco_churn.churn_features')
 client.set_tag(run_id, key='demographic_vars', value='seniorCitizen,gender_Female')
@@ -79,9 +62,7 @@ model_details = mlflow.register_model(model_uri, model_name)
 
 # COMMAND ----------
 
-
-run_id = 'd38152c00ddd4f048eddcb05b3dad31d'
-run_info = client.get_run('d38152c00ddd4f048eddcb05b3dad31d')
+run_info = client.get_run(run_id)
 
 run_info.info
 
@@ -110,7 +91,7 @@ client.update_registered_model(
 client.update_model_version(
   name=model_details.name,
   version=model_details.version,
-  description="This model version was built using sklearn's LogisticRegression."
+  description="This model version was built using XGBoos for demo purposes"
 )
 
 # COMMAND ----------
@@ -156,9 +137,15 @@ mlflow_call_endpoint('transition-requests/create', 'POST', json.dumps(staging_re
 # COMMAND ----------
 
 # Leave a comment for the ML engineer who will be reviewing the tests
-comment = "This was the best model from AutoML, I think we can use it as a baseline."
+comment = "This was the best model from AutoML, I think we can use it as a baseline for demo..."
 comment_body = {'name': model_name, 'version': model_details.version, 'comment': comment}
 mlflow_call_endpoint('comments/create', 'POST', json.dumps(comment_body))
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC 
+# MAGIC Go to [05_ops_validation](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2057356028947983/command/2057356028948011) notebook.
 
 # COMMAND ----------
 

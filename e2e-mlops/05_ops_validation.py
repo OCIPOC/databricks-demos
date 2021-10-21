@@ -1,31 +1,4 @@
 # Databricks notebook source
-# MAGIC %md ---
-# MAGIC title: End-to-End MLOps demo with MLFlow, Feature Store and Auto ML, part 5 - testing and evaluation of a model with MLflow
-# MAGIC authors:
-# MAGIC - Rafi Kurlansik
-# MAGIC tags:
-# MAGIC - python
-# MAGIC - mlflow
-# MAGIC - mlflow-registry
-# MAGIC - signature
-# MAGIC - model-bias
-# MAGIC - slack
-# MAGIC - lifecycle-management
-# MAGIC - staging
-# MAGIC - production
-# MAGIC created_at: 2021-05-01
-# MAGIC updated_at: 2021-05-01
-# MAGIC tldr: End-to-end demo of Databricks for MLOps, including MLflow, the registry, webhooks, scoring, feature store and auto ML. Part 5 - testing and evaluation of a model with MLflow
-# MAGIC ---
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC # Notebook Links
-# MAGIC - AWS demo.cloud: [https://demo.cloud.databricks.com/#notebook/10166925](https://demo.cloud.databricks.com/#notebook/10166925)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Model Tests
 # MAGIC 
@@ -53,7 +26,7 @@ try:
   if 'to_stage' in registry_event and registry_event['to_stage'] != 'Staging':
     dbutils.notebook.exit()
 except Exception:
-  model_name = 'hhar_churn'
+  model_name = 'e2e-mlops-demo-model'
   version = "1"
 print(model_name, version)
 
@@ -274,4 +247,6 @@ else:
 
 # COMMAND ----------
 
-
+# MAGIC %md
+# MAGIC 
+# MAGIC Go to [06_staging_batch_inference](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2057356028947981/command/2057356028948009) notebook

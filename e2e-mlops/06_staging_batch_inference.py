@@ -1,27 +1,4 @@
 # Databricks notebook source
-# MAGIC %md ---
-# MAGIC title: End-to-End MLOps demo with MLFlow, Feature Store and Auto ML, part 6 - batch inference
-# MAGIC authors:
-# MAGIC - Rafi Kurlansik
-# MAGIC tags:
-# MAGIC - python
-# MAGIC - mlflow
-# MAGIC - mlflow-registry
-# MAGIC - batch-inference
-# MAGIC - spark-udf
-# MAGIC created_at: 2021-05-01
-# MAGIC updated_at: 2021-05-01
-# MAGIC tldr: End-to-end demo of Databricks for MLOps, including MLflow, the registry, webhooks, scoring, feature store and auto ML. Part 6 - applying a model with MLflow and Spark UDFs for batch inference
-# MAGIC ---
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC # Notebook Links
-# MAGIC - AWS demo.cloud: [https://demo.cloud.databricks.com/#notebook/10166949](https://demo.cloud.databricks.com/#notebook/10166949)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Churn Prediction Batch Inference
 # MAGIC 
@@ -38,7 +15,7 @@
 
 import mlflow
 
-model = mlflow.pyfunc.spark_udf(spark, model_uri="models:/hhar_churn/staging") # may need to replace with your own model name
+model = mlflow.pyfunc.spark_udf(spark, model_uri="models:/e2e-mlops-demo-model/staging") # may need to replace with your own model name
 
 # COMMAND ----------
 
@@ -70,3 +47,14 @@ display(predictions.select("customerId", "predictions"))
 # COMMAND ----------
 
 predictions.write.format("delta").mode("append").saveAsTable("ibm_telco_churn.churn_preds")
+
+# COMMAND ----------
+
+# MAGIC %sql 
+# MAGIC select * from ibm_telco_churn.churn_preds
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC Go to [07_retrain_churn_automl](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2057356028947987/command/2057356028948024) notebook.

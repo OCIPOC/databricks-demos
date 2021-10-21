@@ -1,26 +1,4 @@
 # Databricks notebook source
-# MAGIC %md ---
-# MAGIC title: End-to-End MLOps demo with MLFlow, Feature Store and Auto ML, part 7 - retraining a model
-# MAGIC authors:
-# MAGIC - Rafi Kurlansik
-# MAGIC tags:
-# MAGIC - python
-# MAGIC - mlflow
-# MAGIC - retrain
-# MAGIC - job
-# MAGIC created_at: 2021-05-01
-# MAGIC updated_at: 2021-05-01
-# MAGIC tldr: End-to-end demo of Databricks for MLOps, including MLflow, the registry, webhooks, scoring, feature store and auto ML. Part 7 - scheduling a job to retrain the model at intervals
-# MAGIC ---
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC # Notebook Links
-# MAGIC - AWS demo.cloud: [https://demo.cloud.databricks.com/#notebook/10166959](https://demo.cloud.databricks.com/#notebook/10166959)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC ## Monthly AutoML Retrain
 # MAGIC 
@@ -47,7 +25,7 @@ features = fs.read_table(feature_table)
 import databricks.automl
 model = databricks.automl.classify(features, 
                                    target_col = "churn",
-                                   data_dir= "dbfs:/tmp/rafi.kurlansik/",
+                                   data_dir= "dbfs:/tmp/ivantang/",
                                    timeout_minutes=5) 
 
 # COMMAND ----------
@@ -63,7 +41,7 @@ from mlflow.tracking.client import MlflowClient
 client = MlflowClient()
 
 run_id = model.best_trial.mlflow_run_id
-model_name = "hhar_churn"
+model_name = "e2e-mlops-demo-model"
 model_uri = f"runs:/{run_id}/model"
 
 client.set_tag(run_id, key='db_table', value='ibm_telco_churn.churn_features')
@@ -132,7 +110,3 @@ mlflow_call_endpoint('transition-requests/create', 'POST', json.dumps(staging_re
 comment = "This was the best model from AutoML, I think we can use it as a baseline."
 comment_body = {'name': model_name, 'version': model_details.version, 'comment': comment}
 mlflow_call_endpoint('comments/create', 'POST', json.dumps(comment_body))
-
-# COMMAND ----------
-
-

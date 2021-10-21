@@ -1,18 +1,4 @@
 # Databricks notebook source
-# MAGIC %md ---
-# MAGIC title: End-to-End MLOps demo with MLFlow, Feature Store and Auto ML, part 2 - Auto ML
-# MAGIC authors:
-# MAGIC - Rafi Kurlansik
-# MAGIC tags:
-# MAGIC - python
-# MAGIC - auto-ml
-# MAGIC created_at: 2021-05-01
-# MAGIC updated_at: 2021-05-01
-# MAGIC tldr: End-to-end demo of Databricks for MLOps, including MLflow, the registry, webhooks, scoring, feature store and auto ML. Part 2 - auto-generated output of auto ML
-# MAGIC ---
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC # Notebook Links
 # MAGIC - AWS demo.cloud: [https://demo.cloud.databricks.com/#notebook/10166871](https://demo.cloud.databricks.com/#notebook/10166871)
@@ -21,6 +7,14 @@
 
 # MAGIC %md
 # MAGIC <img src="https://github.com/RafiKurlansik/laughing-garbanzo/blob/main/step2.png?raw=true">
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC <a href="https://www.loom.com/share/9798b30b48164e44ae5698a73408715e">
+# MAGIC     <p>Getting started with Databricks AutoML - Watch Video</p>
+# MAGIC     <img style="max-width:300px;" src="https://cdn.loom.com/sessions/thumbnails/9798b30b48164e44ae5698a73408715e-with-play.gif">
+# MAGIC   </a>
 
 # COMMAND ----------
 
@@ -47,9 +41,13 @@
 import mlflow
 
 # Use MLflow to track experiments
-mlflow.set_experiment("/Users/rafi.kurlansik@databricks.com/databricks_automl/210504-churn_take_2-iw6ph1kc")
+mlflow.set_experiment("/Users/ivan.tang@databricks.com/New mlflow experiment")
 
-input_path = "/dbfs/rafi.kurlansik@databricks.com/automl/21-05-04 02:36/37d8c518"
+
+
+# COMMAND ----------
+
+input_path = "dbfs:/home/ivan.tang@databricks.com/ibm-telco-churn/bronze/part-00000-bf010e65-ba8e-481f-8b67-216097f92001-c000.snappy.parquet"
 target_col = "churn"
 
 # COMMAND ----------
@@ -225,3 +223,13 @@ except Exception as e:
 # MAGIC model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_version}")
 # MAGIC model.predict(input_X)
 # MAGIC ```
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC Go to [03_webhooks_setup](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2057356028947985/command/2057356028948012) notebook.
+
+# COMMAND ----------
+
+
