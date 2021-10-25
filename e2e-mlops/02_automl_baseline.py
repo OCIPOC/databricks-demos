@@ -43,8 +43,6 @@ import mlflow
 # Use MLflow to track experiments
 mlflow.set_experiment("/Users/ivan.tang@databricks.com/New mlflow experiment")
 
-
-
 # COMMAND ----------
 
 input_path = "dbfs:/home/ivan.tang@databricks.com/ibm-telco-churn/bronze/part-00000-bf010e65-ba8e-481f-8b67-216097f92001-c000.snappy.parquet"

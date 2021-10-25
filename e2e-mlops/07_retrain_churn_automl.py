@@ -26,7 +26,7 @@ import databricks.automl
 model = databricks.automl.classify(features, 
                                    target_col = "churn",
                                    data_dir= "dbfs:/tmp/ivantang/",
-                                   timeout_minutes=5) 
+                                   timeout_minutes=5)
 
 # COMMAND ----------
 

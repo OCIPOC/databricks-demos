@@ -31,6 +31,12 @@
 
 # COMMAND ----------
 
+# MAGIC %md 
+# MAGIC 
+# MAGIC * You can annotate the top-level model and each version individually using Markdown, including description and any relevant information useful for the team such as algorithm descriptions, dataset employed or methodology.
+
+# COMMAND ----------
+
 # Helper Functions
 import mlflow
 from mlflow.utils.rest_utils import http_request

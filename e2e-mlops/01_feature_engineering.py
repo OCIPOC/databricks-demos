@@ -1,8 +1,5 @@
 # Databricks notebook source
-# MAGIC %md
-# MAGIC ![](https://firebasestorage.googleapis.com/v0/b/firescript-577a2.appspot.com/o/imgs%2Fapp%2Fitang%2FeShKp9ffsT.png?alt=media&token=1d1949a6-e560-4e6b-8933-26355abaf2b6)
-# MAGIC 
-# MAGIC _Source: [Hidden Technical Debt in Machine Learning Systems](https://papers.nips.cc/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf)_
+
 
 # COMMAND ----------
 
@@ -36,12 +33,6 @@ display(telcoDF)
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC 
-# MAGIC select * from 
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC Using `koalas` to scale my teammates' `pandas` code.
 
@@ -49,8 +40,6 @@ display(telcoDF)
 
 from databricks.feature_store import feature_table
 import databricks.koalas as ks
-
-
 
 def compute_churn_features(data):
   

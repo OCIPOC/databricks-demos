@@ -29,7 +29,7 @@ clear_working_dirs()
 
 # COMMAND ----------
 
-# MAGIC %sh mkdir -p /dbfs/tmp/sais_eu_19_demo/loans/ && wget -O /dbfs/tmp/sais_eu_19_demo/loans/SAISEU19-loan-risks.snappy.parquet  https://pages.databricks.com/rs/094-YMS-629/images/SAISEU19-loan-risks.snappy.parquet && ls -al  /dbfs/tmp/sais_eu_19_demo/loans/ 
+# MAGIC %sh mkdir -p /dbfs/tmp/sais_eu_19_demo/loans/ && wget -O /dbfs/tmp/sais_eu_19_demo/loans/SAISEU19-loan-risks.snappy.parquet  https://pages.databricks.com/rs/094-YMS-629/images/SAISEU19-loan-risks.snappy.parquet && ls -al  /dbfs/tmp/sais_eu_19_demo/loans/
 
 # COMMAND ----------
 
@@ -104,9 +104,20 @@ df_loans.write.format("delta").mode('overwrite').save(delta_path)
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC 
-# MAGIC Select * from loans_delta
+# from delta.tables import *
+# from pyspark.sql.functions import *
+# import pandas as pd
+# df_states = pd.read_csv('https://raw.githubusercontent.com/jasonong/List-of-US-States/master/states.csv')
+
+# deltaTable = DeltaTable.forPath(spark, delta_path)
+
+# for state_name,abbreviation in df_states.values:
+#     deltaTable.update(condition="addr_state = '%s'" %abbreviation,
+#                       set={"addr_state":"'%s'" %state_name})
+
+# COMMAND ----------
+
+# MAGIC %sql select * from loans_delta
 
 # COMMAND ----------
 
@@ -190,10 +201,6 @@ spark.sql("RESTORE TABLE delta.`%s` VERSION AS OF 1" %(delta_path)).show()
 
 # COMMAND ----------
 
-delta_path
-
-# COMMAND ----------
-
 spark.readStream.format("delta").option("ignoreDeletes", "true").load(delta_path).createOrReplaceTempView("loans_delta_stream")
 
 display(spark.sql("select count(1) from loans_delta_stream"))
@@ -213,11 +220,11 @@ display(spark.sql("select count(1) from loans_delta_stream"))
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Batch update
+# MAGIC ## Batch INSERT
 
 # COMMAND ----------
 
-spark.sql("UPDATE loans_delta SET addr_state='CALIFORNIA' WHERE addr_state = 'California'").show()
+spark.sql("INSERT INTO loans_delta SELECT * FROM loans_delta").show()
 
 # COMMAND ----------
 
@@ -252,11 +259,11 @@ stream_query_2 = generate_and_append_data_stream(table_format = "delta", table_p
 
 # COMMAND ----------
 
-spark.sql("DESCRIBE loans_delta").show()
+# MAGIC %sql DESCRIBE loans_delta;
 
 # COMMAND ----------
 
-spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled = true")
+# MAGIC %sql SET spark.databricks.delta.schema.autoMerge.enabled = true;
 
 # COMMAND ----------
 
@@ -267,7 +274,7 @@ spark.sql("SET spark.databricks.delta.schema.autoMerge.enabled = true")
 # COMMAND ----------
 
 # MAGIC %sh 
-# MAGIC ls -lh /dbfs/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet
+# MAGIC ls -lh /dbfs/Users/ivan.tang@databricks.com/unpacking-transaction-log/loans_parquet/
 
 # COMMAND ----------
 
@@ -282,7 +289,10 @@ spark.sql("OPTIMIZE delta.`%s`" %(delta_path)).show()
 
 # COMMAND ----------
 
+# DBTITLE 1,⚠️ retain based on the required period for time-travelling
 spark.sql("VACUUM delta.`%s` RETAIN 0 HOURS" %(delta_path)).show()
+
+# `retain 0 hours` means you will not be able to time-travel as tombstoned data files will be physically deleted.
 
 # COMMAND ----------
 

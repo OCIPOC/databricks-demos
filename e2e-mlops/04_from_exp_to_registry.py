@@ -91,7 +91,7 @@ client.update_registered_model(
 client.update_model_version(
   name=model_details.name,
   version=model_details.version,
-  description="This model version was built using XGBoos for demo purposes"
+  description="This model version was built using LightGBM for demo purposes..."
 )
 
 # COMMAND ----------
@@ -137,7 +137,7 @@ mlflow_call_endpoint('transition-requests/create', 'POST', json.dumps(staging_re
 # COMMAND ----------
 
 # Leave a comment for the ML engineer who will be reviewing the tests
-comment = "This was the best model from AutoML, I think we can use it as a baseline for demo..."
+comment = "This was the one best model from AutoML within <30 minutes, I think we can use it as a baseline for demo..."
 comment_body = {'name': model_name, 'version': model_details.version, 'comment': comment}
 mlflow_call_endpoint('comments/create', 'POST', json.dumps(comment_body))
 

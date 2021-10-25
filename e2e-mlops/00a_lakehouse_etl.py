@@ -1,4 +1,12 @@
 # Databricks notebook source
+dbutils.widgets.text("slides", """<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQwPm-XtzMnHR23RzBRVb3lKQ3h6hSfYtxV9x3u_6aq_KYmctVaycuX_nXRL-bOHQKzLGotshIMwe7L/embed?start=false&loop=false&delayms=3000" frameborder="0" width="1280" height="749" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>""", "embed_code")
+
+# COMMAND ----------
+
+displayHTML(dbutils.widgets.get("slides"))
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Setup
 # MAGIC 
@@ -114,4 +122,4 @@ _ = spark.sql('''
 
 # COMMAND ----------
 
-
+(database_name,bronze_tbl_name,bronze_tbl_path)
