@@ -7,6 +7,12 @@ displayHTML(dbutils.widgets.get("slides"))
 
 # COMMAND ----------
 
+# MAGIC %md 
+# MAGIC 
+# MAGIC # Predicting telco customer churn
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Setup
 # MAGIC 
@@ -119,7 +125,3 @@ _ = spark.sql('''
   USING DELTA 
   LOCATION '{}'
   '''.format(database_name,bronze_tbl_name,bronze_tbl_path))
-
-# COMMAND ----------
-
-(database_name,bronze_tbl_name,bronze_tbl_path)
