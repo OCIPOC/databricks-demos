@@ -52,7 +52,6 @@ model_uri = f"runs:/{run_id}/model"
 import mlflow
 from mlflow.tracking import MlflowClient
 
-
 client = MlflowClient()
 
 client.set_tag(run_id, key='db_table', value='ibm_telco_churn.churn_features')

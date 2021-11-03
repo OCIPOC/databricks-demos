@@ -1,15 +1,4 @@
 # Databricks notebook source
-
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC 
-# MAGIC 
-# MAGIC <img src="https://firebasestorage.googleapis.com/v0/b/firescript-577a2.appspot.com/o/imgs%2Fapp%2Fitang%2Fbje2dSlofK.png?alt=media&token=54e42f51-8a46-4f8c-b070-8f2cd6c5d7f9" width=1000 />
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC <br><br><br><br><br>
 # MAGIC 
@@ -137,4 +126,8 @@ display(df)
 
 # MAGIC %md 
 # MAGIC 
-# MAGIC Go to: [02_auto_ml_baseline](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/3683571799076275/command/3683571799076277) Notebook
+# MAGIC Go to: [02_auto_ml_baseline](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2642498578011100) Notebook
+
+# COMMAND ----------
+
+

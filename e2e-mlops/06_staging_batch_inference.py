@@ -15,7 +15,7 @@
 
 import mlflow
 
-model = mlflow.pyfunc.spark_udf(spark, model_uri="models:/e2e-mlops-demo-model/staging") # may need to replace with your own model name
+model = mlflow.pyfunc.spark_udf(spark, model_uri="models:/e2e-mlops-demo-model/production") # may need to replace with your own model name
 
 # COMMAND ----------
 

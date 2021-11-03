@@ -14,6 +14,13 @@ displayHTML(dbutils.widgets.get("slides"))
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC 
+# MAGIC 
+# MAGIC <img src="https://firebasestorage.googleapis.com/v0/b/firescript-577a2.appspot.com/o/imgs%2Fapp%2Fitang%2Fbje2dSlofK.png?alt=media&token=54e42f51-8a46-4f8c-b070-8f2cd6c5d7f9" width=1000 />
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC ### Setup
 # MAGIC 
 # MAGIC In this case we'll grab a CSV from the web, but we could also use Python or Spark to read data from databases or cloud storage.
@@ -125,3 +132,13 @@ _ = spark.sql('''
   USING DELTA 
   LOCATION '{}'
   '''.format(database_name,bronze_tbl_name,bronze_tbl_path))
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC Go to [the next notebook](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2642498578011104)
+
+# COMMAND ----------
+
+
