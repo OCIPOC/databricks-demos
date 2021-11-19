@@ -77,6 +77,10 @@ train.count()
 
 # COMMAND ----------
 
+
+
+# COMMAND ----------
+
 # DBTITLE 1,Train our Logistic Regression Model
 from pyspark.ml.classification import LogisticRegression
 # from sklearn.linear_model import LogisticRegression

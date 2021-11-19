@@ -155,6 +155,10 @@ images = spark.read.format("binaryFile") \
 
 # COMMAND ----------
 
+display(images)
+
+# COMMAND ----------
+
 # DBTITLE 1,Feature Extraction with Transfer Learning
 # MAGIC %md
 # MAGIC 
