@@ -1,10 +1,4 @@
 # Databricks notebook source
-import mlflow
-
-model = mlflow.pyfunc.spark_udf(spark, model_uri="models:/imda-demo-model/staging")
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC # Deploying model to Sagemaker as container
 
@@ -18,6 +12,7 @@ image_ecr_url = "997819012307.dkr.ecr.us-west-1.amazonaws.com/databricks:latest"
 
 import mlflow.sagemaker as mfs
 app_name = "telco-churn-app"
+
 mfs.deploy(app_name=app_name, model_uri=model_uri, image_url=image_ecr_url, mode="create", flavor="python_function", region_name=region)
 
 # COMMAND ----------
