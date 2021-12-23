@@ -15,8 +15,12 @@
 
 # COMMAND ----------
 
+from pyspark.sql.functions import col
+
+# COMMAND ----------
+
 # Read into Spark
-telcoDF = spark.table("ibm_telco_churn.bronze_customers")
+telcoDF = spark.table("telco.silver_customers").drop(col('_rescued_data'))
 
 display(telcoDF)
 
@@ -44,9 +48,8 @@ def compute_churn_features(data):
                                  'contract', 'paperlessBilling', 'paymentMethod'],dtype = 'int64')
   
   # Convert label to int and rename column
-  data['churnString'] = data['churnString'].map({'Yes': 1, 'No': 0})
-  data = data.astype({'churnString': 'int32'})
-  data = data.rename(columns = {'churnString': 'churn'})
+  data['Churn'] = data['Churn'].map({'Yes': 1, 'No': 0})
+  data = data.astype({'Churn': 'int32'})
   
   # Clean up column names
   data.columns = data.columns.str.replace(' ', '')
@@ -75,19 +78,19 @@ fs = FeatureStoreClient()
 churn_features_df = compute_churn_features(telcoDF)
 
 churn_feature_table = fs.create_feature_table(
-  name='ibm_telco_churn.churn_features',
+  name='telco.churn_features',
   keys='customerID',
   schema=churn_features_df.spark.schema(),
   description='These features are derived from the ibm_telco_churn.bronze_customers table in the lakehouse.  I created dummy variables for the categorical columns, cleaned up their names, and added a boolean flag for whether the customer churned or not.  No aggregations were performed.'
 )
 
-fs.write_table(df=churn_features_df.to_spark(), name='ibm_telco_churn.churn_features', mode='overwrite')
+fs.write_table(df=churn_features_df.to_spark(), name='telco.churn_features', mode='overwrite')
 
 # COMMAND ----------
 
 from databricks.feature_store import FeatureStoreClient
 fs = FeatureStoreClient()
-df = fs.read_table(name="ibm_telco_churn.churn_features")
+df = fs.read_table(name="telco.churn_features")
 display(df)
 
 # COMMAND ----------
@@ -127,7 +130,3 @@ display(df)
 # MAGIC %md 
 # MAGIC 
 # MAGIC Go to: [02_auto_ml_baseline](https://adb-2095731916479437.17.azuredatabricks.net/?o=2095731916479437#notebook/2642498578011100) Notebook
-
-# COMMAND ----------
-
-
