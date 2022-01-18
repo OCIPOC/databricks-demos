@@ -112,7 +112,7 @@ schema = StructType([
   ])
 
 # Read CSV, write to Delta and take a look
-bronze_df = spark.read.format('csv').schema(schema).option('header','true')\
+bronze_df = spark.read.format('csv').schema(schema).option('header','true', "inferSchema",'true')\
                .load(driver_to_dbfs_path)
 
 bronze_df.write.format('delta').mode('overwrite').save(bronze_tbl_path)

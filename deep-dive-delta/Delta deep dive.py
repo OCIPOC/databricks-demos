@@ -147,6 +147,10 @@ display(deltaTable.history())
 
 # COMMAND ----------
 
+spark.sql("DESCRIBE TABLE delta.`%s` VERSION AS OF 0" %(delta_path)).show()
+
+# COMMAND ----------
+
 # MAGIC %md 
 # MAGIC ## Querying earlier versions
 # MAGIC 
