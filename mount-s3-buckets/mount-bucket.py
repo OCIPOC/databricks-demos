@@ -10,3 +10,7 @@ mount_name = "canedge2"
 dbutils.fs.mount("s3a://%s:%s@%s" % (access_key, secret_key.replace("/", "%2F"), aws_bucket_name), "/mnt/%s" % mount_name)
 display(dbutils.fs.ls("/mnt/%s" % mount_name))
 
+
+# COMMAND ----------
+
+

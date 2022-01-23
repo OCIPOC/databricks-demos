@@ -12,13 +12,16 @@ from utils import setup_fs, load_dbc_files, restructure_data, add_custom_sig, Pr
 
 # COMMAND ----------
 
-
+sample_file = '/dbfs/mnt/canedge2/vehicle-1/00000002/00000001-61E3B0FF.MF4'
 
 # COMMAND ----------
 
-# MAGIC %sh
-# MAGIC 
-# MAGIC wget https://raw.githubusercontent.com/CSS-Electronics/api-examples/master/examples/data-processing/requirements.txt
+proc = ProcessData(fs, db_list, signals=[])
+df_phys_all = pd.DataFrame()
+df_raw, device_id = proc.get_raw_data(sample_file)
+df_phys = proc.extract_phys(df_raw)
+proc.print_log_summary(device_id, log_file, df_phys)
+
 
 # COMMAND ----------
 
